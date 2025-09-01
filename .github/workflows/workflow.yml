@@ -1,12 +1,11 @@
 name: Build and Push Multi-Arch Docker Image
 
-# Trigger only on pushes to main
 on:
   push:
     branches:
       - main
 
-# Ensure only one run per branch at a time
+# Only one workflow per branch at a time
 concurrency:
   group: build-and-push-${{ github.ref }}
   cancel-in-progress: true
@@ -16,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -26,13 +25,13 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}  # PAT with write:packages
+          password: ${{ secrets.GHCR_PAT }}
 
-      # 3️⃣ Set up Docker Buildx for multi-arch builds
+      # 3️⃣ Set up Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 4️⃣ Build and push the Docker image
+      # 4️⃣ Build and push multi-arch Docker image with caching
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -41,7 +40,9 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/gdudeunderscore/my-java-python-image:latest
+          cache-from: type=registry,ref=ghcr.io/gdudeunderscore/my-java-python-image:latest
+          cache-to: type=registry,ref=ghcr.io/gdudeunderscore/my-java-python-image:latest,mode=max
 
-      # 5️⃣ Optional: Verify Python installation
+      # 5️⃣ Optional: verify Python
       - name: Verify Python installation
         run: docker run --rm ghcr.io/gdudeunderscore/my-java-python-image:latest python3 --version

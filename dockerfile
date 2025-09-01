@@ -17,14 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Verify installations
+# Verify installations (optional, can remove in production)
 RUN java -version && python3 --version
 
-# Set working directory for Pterodactyl
-WORKDIR /srv/daemon-data
+# Create and set the working directory for Pterodactyl
+RUN mkdir -p /home/container
+WORKDIR /home/container
 
-# Default shell
+# Do NOT set CMD here — Pterodactyl will run your server process automatically
+# The startup command should be configured in the egg (e.g., java -jar server.jar)
+
+# Default shell (optional, only if you exec into container)
 SHELL ["/bin/bash", "-c"]
-
-# Default command
-CMD ["bash"]

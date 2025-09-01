@@ -1,32 +1,24 @@
 # -----------------------------
-# Optimized Python 3.12 + Java 21 ARM64 Dockerfile
+# Python 3.12 + Java 21 ARM64 Dockerfile
+# Optimized for Pterodactyl
 # -----------------------------
 
-# Base image: Python 3.12 slim (ARM64)
-FROM python:3.12-slim
+# Base image: Eclipse Temurin 21 JDK (ARM64, prebuilt)
+FROM eclipse-temurin:21-jdk-jammy
 
 # Set noninteractive for apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal dependencies for Java and Pterodactyl
+# Install Python 3.12 only (prebuilt), minimal dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
+        python3.12 \
+        python3.12-venv \
+        python3-pip \
         ca-certificates \
-        unzip \
-        git \
-        curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Java 21 (Temurin, ARM64)
-RUN mkdir -p /usr/lib/jvm && \
-    wget -O /tmp/temurin21.tar.gz https://github.com/adoptium/temurin21-binaries/releases/latest/download/OpenJDK21U-jdk_aarch64_linux_hotspot.tar.gz && \
-    tar -xzf /tmp/temurin21.tar.gz -C /usr/lib/jvm && \
-    rm /tmp/temurin21.tar.gz && \
-    update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-21*/bin/java 1 && \
-    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk-21*/bin/javac 1
-
-# Verify Python and Java installations
-RUN python3 --version && java -version
+# Verify installations
+RUN java -version && python3 --version
 
 # Set working directory for Pterodactyl
 WORKDIR /srv/daemon-data

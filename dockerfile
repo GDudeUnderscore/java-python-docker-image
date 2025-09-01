@@ -1,27 +1,21 @@
-# Use Python 3.11 slim-bullseye as base (ARM64 compatible)
+# Use Python 3.11 slim-bullseye (ARM64)
 FROM arm64v8/python:3.11-slim-bullseye
 
-# Avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies and OpenJDK 24
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    curl \
-    bash \
-    ca-certificates \
-    libssl-dev \
-    zlib1g-dev \
-    libncurses5-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    libffi-dev \
-    libbz2-dev \
-    openjdk-24-jdk \
+    wget curl bash ca-certificates libssl-dev zlib1g-dev \
+    libncurses5-dev libreadline-dev libsqlite3-dev libffi-dev libbz2-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables for Java
-ENV JAVA_HOME=/usr/lib/jvm/java-24-openjdk-arm64
+# Install OpenJDK 24 (Adoptium prebuilt ARM64)
+RUN wget https://github.com/adoptium/temurin24-binaries/releases/latest/download/OpenJDK24U-jdk_aarch64_linux_hotspot.tar.gz \
+    && tar -xzf OpenJDK24U-jdk_aarch64_linux_hotspot.tar.gz -C /usr/lib/jvm \
+    && rm OpenJDK24U-jdk_aarch64_linux_hotspot.tar.gz
+
+# Set Java environment
+ENV JAVA_HOME=/usr/lib/jvm/jdk-24
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Create Pterodactyl user

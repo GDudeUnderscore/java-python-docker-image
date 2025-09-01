@@ -1,27 +1,29 @@
-# Multi-arch Python 3.13 + Java 21
-FROM --platform=$BUILDPLATFORM ghcr.io/adoptium/temurin:21-jdk-bullseye
+# Use an ARM64-compatible base image
+FROM arm64v8/debian:bullseye-slim
 
-# Install Python 3.13 and pip
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3.13 \
-        python3.13-venv \
-        python3.13-dev \
-        python3-pip \
-        build-essential \
-        wget \
-        curl \
-        unzip \
-    && rm -rf /var/lib/apt/lists/*
+# Set environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-24-openjdk-arm64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Verify installations
-RUN python3 --version && java -version
+# Install dependencies and Java 24
+RUN apt-get update && \
+    apt-get install -y \
+    openjdk-24-jdk \
+    python3.13 \
+    python3.13-distutils \
+    curl \
+    ca-certificates \
+    bash \
+    && apt-get clean;
 
-# Working directory and copy
-WORKDIR /app
-COPY . /app
+# Set up the container user
+RUN useradd -m -s /bin/bash container
+USER container
+WORKDIR /home/container
 
-# Install Python dependencies
-RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Default command
-CMD ["python3", "hapily.py"]
+# Set the entrypoint
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

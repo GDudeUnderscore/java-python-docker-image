@@ -1,24 +1,33 @@
-# Use the official Python 3.13.7 image based on Debian Bullseye
-FROM python:3.13.7-slim-bullseye
+# Use Python 3.11 slim-bullseye as base (ARM64 compatible)
+FROM arm64v8/python:3.11-slim-bullseye
 
-# Install OpenJDK 24 (Adoptium)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies and OpenJDK 24
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    curl \
+    bash \
+    ca-certificates \
+    libssl-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libffi-dev \
+    libbz2-dev \
     openjdk-24-jdk \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables for Java and Python
-ENV JAVA_HOME=/usr/lib/jvm/java-24-openjdk-amd64
+# Set environment variables for Java
+ENV JAVA_HOME=/usr/lib/jvm/java-24-openjdk-arm64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Optionally, set the working directory
-WORKDIR /app
+# Create Pterodactyl user
+RUN useradd -m -s /bin/bash container
+USER container
+WORKDIR /home/container
 
-# Copy your application code into the container
-COPY . /app
-
-# Install any required Python packages
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Command to run your application
-CMD ["python", "your_script.py"]
+# Default command
+CMD ["/bin/bash"]

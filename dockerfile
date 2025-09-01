@@ -21,9 +21,9 @@ RUN add-apt-repository ppa:deadsnakes/ppa -y \
     && apt-get install -y python3.13 python3.13-dev python3.13-venv python3-pip \
     && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
 
-# Install Java 24 (assuming OpenJDK)
+# Install Java 24 (OpenJDK)
 RUN apt-get update && apt-get install -y wget unzip \
-    && wget https://download.java.net/java/GA/jdk24/latest/binaries/openjdk-24_linux-x64_bin.tar.gz -O /tmp/jdk24.tar.gz \
+    && wget https://download.java.net/java/GA/jdk24/1f9ff9062db4449d8ca828c504ffae90/36/GPL/openjdk-24_linux-x64_bin.tar.gz -O /tmp/jdk24.tar.gz \
     && mkdir -p /usr/lib/jvm \
     && tar -xzf /tmp/jdk24.tar.gz -C /usr/lib/jvm \
     && rm /tmp/jdk24.tar.gz

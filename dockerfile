@@ -1,5 +1,5 @@
 # -----------------------------
-# Python 3.12 + Java 21 ARM64 Dockerfile
+# Java 21 + Python 3.10 ARM64 Dockerfile
 # Optimized for Pterodactyl
 # -----------------------------
 
@@ -9,10 +9,10 @@ FROM eclipse-temurin:21-jdk-jammy
 # Set noninteractive for apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python 3.12 only (prebuilt), minimal dependencies
+# Install Python 3.10 and minimal dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3.12 \
-        python3.12-venv \
+        python3.10 \
+        python3.10-venv \
         python3-pip \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*

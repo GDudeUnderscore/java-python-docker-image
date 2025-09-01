@@ -18,7 +18,7 @@ WORKDIR /home/container
 ENTRYPOINT []
 
 # Default command to keep container alive; Pterodactyl overrides it
-CMD ["python3 main.py"]
+CMD ["python3", "main.py"]
 
 # Optional: shell if you exec into container manually
 SHELL ["/bin/bash", "-c"]

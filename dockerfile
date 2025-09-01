@@ -1,23 +1,15 @@
-# Use official Python 3.13 slim image (multi-arch: amd64 + arm64)
-FROM python:3.13-slim
+# Multi-arch Python + Java 24
+# Start from official OpenJDK 24 image (multi-arch)
+FROM ghcr.io/adoptium/temurin:24-jdk-focal
 
-# Avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Install Python 3.13
+RUN apt-get update && apt-get install -y python3.13 python3.13-venv python3.13-dev python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Java 24 dependencies
-RUN apt-get update && apt-get install -y wget unzip ca-certificates build-essential && rm -rf /var/lib/apt/lists/*
+# Set Python3 as default
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
 
-# Download and install OpenJDK 24
-RUN wget https://download.java.net/java/GA/jdk24/1f9ff9062db4449d8ca828c504ffae90/36/GPL/openjdk-24_linux-x64_bin.tar.gz -O /tmp/jdk24.tar.gz \
-    && mkdir -p /usr/lib/jvm \
-    && tar -xzf /tmp/jdk24.tar.gz -C /usr/lib/jvm \
-    && rm /tmp/jdk24.tar.gz
-
-# Set JAVA_HOME and update PATH
-ENV JAVA_HOME=/usr/lib/jvm/jdk-24
-ENV PATH="$JAVA_HOME/bin:$PATH"
-
-# Verify installations
+# Verify
 RUN python3 --version && java -version
 
 # Default command

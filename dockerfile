@@ -1,21 +1,22 @@
-FROM eclipse-temurin:24-jdk
+# Start from official Python 3.13 image (multi-arch)
+FROM python:3.13-slim
 
-# Install prerequisites
-RUN apt-get update && apt-get install -y software-properties-common wget build-essential
+# Install curl/wget for downloading JDK
+RUN apt-get update && apt-get install -y wget unzip ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Add deadsnakes PPA
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get update && apt-get install -y \
-        python3.13 python3.13-venv python3.13-dev python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+# Install Java 24 (multi-arch) via Adoptium Temurin
+RUN wget https://github.com/adoptium/temurin24-binaries/releases/latest/download/OpenJDK24U-jdk_aarch64_linux_hotspot.tar.gz -O /tmp/jdk24.tar.gz \
+    && mkdir -p /usr/lib/jvm \
+    && tar -xzf /tmp/jdk24.tar.gz -C /usr/lib/jvm \
+    && rm /tmp/jdk24.tar.gz \
+    && update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-24/bin/java 1 \
+    && update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk-24/bin/javac 1
 
-# Set python3 default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
-
+# Set working directory
 WORKDIR /app
 COPY . /app
 
-# Optional: install Python deps
-RUN if [ -f requirements.txt ]; then python3 -m pip install --no-cache-dir -r requirements.txt; fi
+# Install Python dependencies
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
 CMD ["python3", "hapily.py"]

@@ -1,4 +1,3 @@
-# Use Eclipse Temurin 21 JDK (ARM64)
 FROM eclipse-temurin:21-jdk-jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -11,12 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory for Pterodactyl
+# Set working directory
 RUN mkdir -p /home/container
 WORKDIR /home/container
 
-# Make sure container does not start jshell by default
-CMD []
+# Prevent jshell or bash from starting automatically
+ENTRYPOINT []
 
-# Optional: shell if you exec into container
+# Optional: shell if you exec into container manually
 SHELL ["/bin/bash", "-c"]

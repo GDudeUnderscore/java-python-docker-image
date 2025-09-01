@@ -1,7 +1,7 @@
 # Use an ARM64-compatible Debian slim base image
 FROM debian:bullseye-slim
 
-# Set environment variables
+# Set environment variables for Java
 ENV JAVA_HOME=/usr/lib/jvm/java-24-openjdk-arm64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
@@ -21,9 +21,5 @@ RUN useradd -m -s /bin/bash container
 USER container
 WORKDIR /home/container
 
-# Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Set the entrypoint
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+# Default command (can be overridden by Pterodactyl startup)
+CMD ["/bin/bash"]

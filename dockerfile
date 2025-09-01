@@ -14,8 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p /home/container
 WORKDIR /home/container
 
-# Prevent jshell or bash from starting automatically
+# Clear any ENTRYPOINT from base image
 ENTRYPOINT []
+
+# Default command to keep container alive; Pterodactyl overrides it
+CMD ["sleep", "infinity"]
 
 # Optional: shell if you exec into container manually
 SHELL ["/bin/bash", "-c"]
